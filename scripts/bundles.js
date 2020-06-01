@@ -43,77 +43,133 @@ const bundleNames = [];
 /** @type {RollupOptions[]} */
 const bundleSnippets = [
   // `htm` has to come before `babel-plugin-htm`
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/htm/src/index.js`,
-    output: { file: dest(name, format), format, name: 'htm' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/hydrate/src/index.js`,
-    external: ['sinuous', 'sinuous/htm'],
-    output: { file: dest(name, format), format, name: 'hydrate' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/observable/src/observable.js`,
-    output: { file: dest(name, format), format, name: 'observable' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/h/src/index.js`,
-    output: { file: dest(name, format), format, name: 'h' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/template/src/template.js`,
-    external: ['sinuous'],
-    output: { file: dest(name, format), format, name: 'template' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/data/src/data.js`,
-    external: ['sinuous', 'sinuous/template'],
-    output: { file: dest(name, format), format, name: 'data' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/memo/src/memo.js`,
-    output: { file: dest(name, format), format, name: 'memo' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/render/src/index.js`,
-    external: ['sinuous', 'sinuous/template', 'sinuous/htm'],
-    output: { file: dest(name, format), format, name: 'render' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/map/mini/src/mini.js`,
-    external: ['sinuous'],
-    output: { file: dest(name, format), format, name: 'mini' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/map/src/index.js`,
-    external: ['sinuous'],
-    output: { file: dest(name, format), format, name: 'map' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/src/index.js`,
-    external: ['sinuous/observable', 'sinuous/htm' ],
-    output: { file: dest(name, format), format, name: 'sinuous' },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/src/index.js`,
-    external: ['sinuous/htm'],
-    output: { file: dest(name, format), format, name: 'so', sourcemap: false },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
-    input: `${src}/jsx/index.js`,
-    external: ['sinuous/observable'],
-    output: { file: dest(name, format), format, name: 'sinuous' },
-  })),
-  ...[ESM, CJS].map(format => ({
-    input: `${src}/babel-plugin-htm/src/index.js`,
-    output: { file: dest(name, format), format },
-  })),
-  ...[ESM, UMD, IIFE].map(format => ({
+  mk('htm',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/htm/src/index.js`,
+      output: { name: 'htm' },
+    }),
+  mk('hydrate',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/hydrate/src/index.js`,
+      external: ['sinuous', 'sinuous/htm'],
+      output: { name: 'hydrate' },
+    }),
+  mk('observable',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/observable/src/observable.js`,
+      output: { name: 'observable' },
+    }),
+  mk('h',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/h/src/index.js`,
+      output: { name: 'h' },
+    }),
+  mk('template',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/template/src/template.js`,
+      external: ['sinuous'],
+      output: { name: 'template' },
+    }),
+  mk('data',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/data/src/data.js`,
+      external: ['sinuous', 'sinuous/template'],
+      output: { name: 'data' },
+    }),
+  mk('memo',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/memo/src/memo.js`,
+      output: { name: 'memo' },
+    }),
+  mk('render',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/render/src/index.js`,
+      external: ['sinuous', 'sinuous/template', 'sinuous/htm'],
+      output: { name: 'render' },
+    }),
+  mk('map/mini',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/map/mini/src/mini.js`,
+      external: ['sinuous'],
+      output: { name: 'mini' },
+    }),
+  mk('map',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/map/src/index.js`,
+      external: ['sinuous'],
+      output: { name: 'map' },
+    }),
+  mk('sinuous',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/src/index.js`,
+      external: ['sinuous/observable', 'sinuous/htm' ],
+      output: { name: 'sinuous' },
+    }),
+  mk('sinuous-observable',
+    [ESM],
+    {
+      input: `${src}/src/index.js`,
+      external: ['sinuous/htm'],
+      output: {
+        sourcemap: false,
+      },
+    }),
+  mk('jsx',
+    [ESM, UMD, IIFE],
+    {
+      input: `${src}/jsx/index.js`,
+      external: ['sinuous/observable'],
+      output: { name: 'sinuous' },
+    }),
+  mk('babel-plugin-htm',
+    [ESM, CJS],
+    {
+      input: `${src}/babel-plugin-htm/src/index.js`,
+    }),
+  mk('all',
+    [ESM, UMD, IIFE],
+    {
     // Multiple globals - @see https://github.com/rollup/rollup/issues/494
-    input: `${src}/all/src/index.js`,
-    output: { file: dest(name, format), format, name: 'window', extend: true },
-  })),
-];
+      input: `${src}/all/src/index.js`,
+      output: { name: 'window', extend: true },
+    }),
+]
+  .flat(); // Config snippets are split into their own full configs as an array
+
+/**
+ * Expand a multi-format snippet into an array of single-format configs
+ * @typedef {InputOptions & { output?: OutputOptions }} ConfigSnippet
+ * @type {(name: string, formats: ModuleFormat[], configSnippet: ConfigSnippet) => RollupOptions[]}
+ */
+function mk(name, formats, configSnippet) {
+  /** @type {RollupOptions[]} */
+  const perFormatConfigs = [];
+  const { output, ...rest } = configSnippet;
+  for (const format of formats) {
+    // For CLI later
+    bundleNames.push(name);
+    perFormatConfigs.push({
+      output: {
+        file: dest(name, format),
+        format,
+        ...output,
+      },
+      ...rest,
+    });
+  }
+  return perFormatConfigs;
+}
 
 /**
  * Generate a full self contained bundle config from a single-format config
