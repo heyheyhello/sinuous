@@ -22,7 +22,6 @@ const bundleFormatVariables = {
 };
 
 const { CJS, ESM, IIFE, UMD } = bundleFormatVariables;
-const bundleFormats = Object.values(bundleFormatVariables);
 
 // Format extensions
 const ext = {
@@ -44,131 +43,77 @@ const bundleNames = [];
 /** @type {RollupOptions[]} */
 const bundleSnippets = [
   // `htm` has to come before `babel-plugin-htm`
-  mk('htm', {
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/htm/src/index.js`,
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'htm' } },
-  }),
-  mk('hydrate', {
+    output: { file: dest(name, format), format, name: 'htm' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/hydrate/src/index.js`,
     external: ['sinuous', 'sinuous/htm'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'hydrate' } },
-  }),
-  mk('observable', {
+    output: { file: dest(name, format), format, name: 'hydrate' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/observable/src/observable.js`,
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'observable' } },
-  }),
-  mk('h', {
+    output: { file: dest(name, format), format, name: 'observable' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/h/src/index.js`,
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'h' } },
-  }),
-  mk('template', {
+    output: { file: dest(name, format), format, name: 'h' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/template/src/template.js`,
     external: ['sinuous'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'template' } },
-  }),
-  mk('data', {
+    output: { file: dest(name, format), format, name: 'template' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/data/src/data.js`,
     external: ['sinuous', 'sinuous/template'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'data' } },
-  }),
-  mk('memo', {
+    output: { file: dest(name, format), format, name: 'data' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/memo/src/memo.js`,
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'memo' } },
-  }),
-  mk('render', {
+    output: { file: dest(name, format), format, name: 'memo' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/render/src/index.js`,
     external: ['sinuous', 'sinuous/template', 'sinuous/htm'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'render' } },
-  }),
-  mk('map/mini', {
+    output: { file: dest(name, format), format, name: 'render' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/map/mini/src/mini.js`,
     external: ['sinuous'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'mini' } },
-  }),
-  mk('map', {
+    output: { file: dest(name, format), format, name: 'mini' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/map/src/index.js`,
     external: ['sinuous'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'map' } },
-  }),
-  mk('sinuous', {
+    output: { file: dest(name, format), format, name: 'map' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/src/index.js`,
     external: ['sinuous/observable', 'sinuous/htm' ],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'sinuous' } },
-  }),
-  mk('sinuous-observable', {
+    output: { file: dest(name, format), format, name: 'sinuous' },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/src/index.js`,
     external: ['sinuous/htm'],
-    output: {
-      sourcemap: false,
-    },
-    [ESM]: {},
-  }),
-  mk('jsx', {
+    output: { file: dest(name, format), format, name: 'so', sourcemap: false },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     input: `${src}/jsx/index.js`,
     external: ['sinuous/observable'],
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'sinuous' } },
-  }),
-  mk('babel-plugin-htm', {
+    output: { file: dest(name, format), format, name: 'sinuous' },
+  })),
+  ...[ESM, CJS].map(format => ({
     input: `${src}/babel-plugin-htm/src/index.js`,
-    [ESM + CJS]: {},
-  }),
-  mk('all', {
+    output: { file: dest(name, format), format },
+  })),
+  ...[ESM, UMD, IIFE].map(format => ({
     // Multiple globals - @see https://github.com/rollup/rollup/issues/494
     input: `${src}/all/src/index.js`,
-    [ESM]: {},
-    [UMD + IIFE]: { output: { name: 'window', extend: true } },
-  }),
-]
-  .flat(); // Config snippets are split into their own full configs as an array
-
-/**
- * Expand a multi-format snippet into an array of single-format configs
- * @typedef {InputOptions & { output?: OutputOptions }} PerFormatConfig
- * @typedef {PerFormatConfig & { [maybeFormat: string]: PerFormatConfig | {} }} ConfigSnippet
- * @type {(name: string, configSnippet: ConfigSnippet) => RollupOptions[]}
- */
-function mk(name, configSnippet) {
-  const all = {};
-  /** @type {RollupOptions[]} */
-  const perFormatConfigs = [];
-
-  for (const key in configSnippet) {
-    const matchedFormats = bundleFormats.filter(format => key.includes(format));
-    for (const format of matchedFormats) {
-      // @ts-ignore '{}' doesn't include 'output'
-      const { output = {}, ...rest } = configSnippet[key];
-      // For CLI later
-      bundleNames.push(name);
-      perFormatConfigs.push({
-        output: {
-          file: dest(name, format),
-          format,
-          ...output,
-        },
-        // TODO: For plugins or other object/array merging consider deepmerge
-        ...rest,
-      });
-    }
-    if (matchedFormats.length === 0) {
-      all[key] = configSnippet[key];
-    }
-  }
-  // TODO: This is yet another reason to delegate to deepemerge
-  return perFormatConfigs.map(({ output, ...o }) =>
-    Object.assign({}, all, { output: { ...all.output, ...output }, ...o }));
-}
+    output: { file: dest(name, format), format, name: 'window', extend: true },
+  })),
+];
 
 /**
  * Generate a full self contained bundle config from a single-format config
